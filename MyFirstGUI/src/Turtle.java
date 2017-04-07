@@ -1,7 +1,15 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
 
-public abstract class Vehicle implements Raceable {
+import javax.imageio.ImageIO;
+
+public class Turtle implements Raceable {
 	static long count = 0;
 	
 	private double xPos;
@@ -11,15 +19,27 @@ public abstract class Vehicle implements Raceable {
 	private int carSpeed;
 	private int carDirection;
 	
-	public Vehicle(double xPos, double yPos, Color carColor, int speed, int direction) {
+	private Image image;
+	
+	public Turtle(double xPos, double yPos, Color carColor, int speed, int direction) {
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.carColor = carColor;
 		this.carDirection = direction;
 		this.carSpeed = speed;
+		
+		File turtleFile = new File("image/turtle-40x60.png");
+		
+		try {
+			image = ImageIO.read(turtleFile);
+		}
+		catch (IOException e) {
+			System.out.println("Image File not found");
+			System.exit(1); // Kill APP
+		}
 	}
 
-	public Vehicle(double xPos, double yPos, Color carColor) {
+	public Turtle(double xPos, double yPos, Color carColor) {
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.carColor = carColor;
@@ -64,7 +84,9 @@ public abstract class Vehicle implements Raceable {
 		this.setYPos(this.getYPos()+deltay);
 	}
 
-	
-	public abstract void draw(Graphics g, Color newColor);
+	public void draw(Graphics g, Color newColor) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.drawImage(this.image,(int) this.getXPos(), (int)this.getYPos(), null);
+	}
 	
 }
