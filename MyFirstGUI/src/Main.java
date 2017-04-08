@@ -7,7 +7,7 @@ public class Main {
 		mainFrame.setTitle("My First Java GUI With Mutable Cars Rocks!!");
 		
 		int numCars = mainFrame.getHeight() / MyComponent.laneWidth;
-		MyComponent theComponent = new MyComponent(numCars);
+		MyComponent theComponent = new MyComponent();
 		mainFrame.add(theComponent);
 		
 		mainFrame.setVisible(true);

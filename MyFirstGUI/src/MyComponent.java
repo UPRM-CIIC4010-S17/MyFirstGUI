@@ -8,40 +8,55 @@ import java.awt.geom.Point2D;
 import java.util.Random;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 public class MyComponent extends JComponent {
 
-	private static int counter = 0;
+	private int counter = 0;
+	
+	private long timeElapsed = 0;
+	
+	private long repaintPeriod = 100;  // repaint period in milliseconds
 
-	private static Raceable theCars[];
+	private Raceable theCars[];
 
 	private static Random genRand = new Random();
 
-	private static boolean someCarWon = false;
+	private boolean someCarWon = false;
 
 	public static final int laneWidth = 50;
 
 	public boolean getSomeCarWon() { return someCarWon; }
 
-	public MyComponent(int numCars) {
-		theCars = new Raceable[numCars];
-		for(int i=0; i<numCars; i++) {
-			int laneY = i * laneWidth + 10;
-			if (i==0) {
-				theCars[i] = new PoliceCar(0, laneY, Color.RED, 0, 1);
-			}
-			else if (i==1) {
-				theCars[i] = new Truck(0, laneY, Color.BLACK, 0, 1);
-			}
-			else if (i==2) {
-				theCars[i] = new Turtle(0, laneY, Color.BLACK, 0, 1);
-			}
-			else {
-				theCars[i] = new MutableCar(0, laneY, Color.RED, 0, 1);
-			}
-		}	
+	public MyComponent() {
+		// Dummy racers so that GUI designer doesn't crash
+		theCars = new Raceable[12];
+		int y = 0;
+		for (int i=0; i<12; i++) {
+			theCars[i] = new MutableCar(0, y, Color.RED, 0, 1);
+			y += laneWidth;
+		}
+	}
+	
+	public void setRepaintPeriod(long period) {
+		repaintPeriod = period;
+	}
+	
+	public long getTimeElapsed() {
+		return timeElapsed;
+	}
+	
+	public void setTimeElapsed(long time) {
+		timeElapsed = time;
 	}
 
+	public void addRacers(Raceable[] racers) {
+		theCars = new Raceable[12];
+		for (int i=0; i<12; i++) {
+			this.theCars[i] = racers[i];
+		}
+	}
+	
 	public boolean carCrashed(Raceable c) {
 		if (c.getCarDirection() > 0) {
 			if (c.getXPos()+60 >= this.getWidth()) {
@@ -77,6 +92,8 @@ public class MyComponent extends JComponent {
 			}
 		}
 		theCars[iMax].draw(g,Color.GREEN);
+		
+		timeElapsed += repaintPeriod;
 
 		System.out.println("Painted " + counter++ + " times");
 	}
