@@ -70,6 +70,7 @@ public class MainRaceWindow {
 					System.exit(1);
 				}
 			}
+			window.theComponent.repaint();
 			window.racePaused = true;
 			window.btnPause.setEnabled(false);
 			window.resetClicked=false;

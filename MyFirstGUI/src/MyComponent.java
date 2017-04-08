@@ -90,7 +90,9 @@ public class MyComponent extends JComponent {
 			else {
 				theCars[i].draw(g,Color.GREEN);
 			}
-			theCars[i].move(genRand.nextInt(10), 0);
+			
+			theCars[i].move(Math.min(genRand.nextInt(10), this.getWidth()-60-theCars[i].getXPos()), 0);
+			
 			if (this.carCrashed(theCars[i])) {
 				this.someCarWon = true;
 			}
