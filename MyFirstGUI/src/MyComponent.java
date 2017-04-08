@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 public class MyComponent extends JComponent {
 
-	private int counter = 0;
+	private int counter = 1;
 	
 	private long timeElapsed = 0;
 	
@@ -27,6 +27,7 @@ public class MyComponent extends JComponent {
 	public static final int laneWidth = 50;
 
 	public boolean getSomeCarWon() { return someCarWon; }
+	public void setSomeCarWon(boolean won) { someCarWon = won; }
 
 	public MyComponent() {
 		// Dummy racers so that GUI designer doesn't crash
@@ -86,12 +87,14 @@ public class MyComponent extends JComponent {
 			if (i!=iMax) {
 				theCars[i].draw(g,theCars[i].getColor());
 			}
+			else {
+				theCars[i].draw(g,Color.GREEN);
+			}
 			theCars[i].move(genRand.nextInt(10), 0);
 			if (this.carCrashed(theCars[i])) {
 				this.someCarWon = true;
 			}
 		}
-		theCars[iMax].draw(g,Color.GREEN);
 		
 		timeElapsed += repaintPeriod;
 

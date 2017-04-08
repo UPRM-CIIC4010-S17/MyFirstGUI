@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import javax.swing.border.LineBorder;
+import javax.swing.border.EmptyBorder;
 
 public class MainRaceWindow {
 
@@ -33,7 +34,11 @@ public class MainRaceWindow {
 	private boolean racePaused = true;
 	private long repaintPeriod = 100;
 
-	JLabel lblTimeElapsed;
+	private JLabel lblTimeElapsed;
+	private JButton btnPause;
+	private boolean resetClicked = false;
+
+
 
 	/**
 	 * Launch the application.
@@ -49,17 +54,38 @@ public class MainRaceWindow {
 		//		} catch (Exception e) {
 		//			e.printStackTrace();
 		//		}
-		while (!window.theComponent.getSomeCarWon()) {
-			if (!window.racePaused) {
-				window.theComponent.repaint();
-				window.updateTimeElapsed();
+		while(true) {
+
+			while (!window.theComponent.getSomeCarWon()) {
+				if (!window.racePaused) {
+					window.theComponent.repaint();
+					window.updateTimeElapsed();
+				}
+				try {
+					Thread.sleep(window.repaintPeriod);
+				}
+				catch (InterruptedException e) {
+					System.exit(1);
+				}
 			}
-			try {
-				Thread.sleep(window.repaintPeriod);
+			window.racePaused = true;
+			window.btnPause.setEnabled(false);
+			window.resetClicked=false;
+			long seconds = 0;
+			while (!window.resetClicked) { 
+				try {
+					Thread.sleep(1000);
+				}
+				catch (InterruptedException e) {
+					System.exit(1);
+				}
+				System.out.println("Waiting: "  + seconds++ + " seconds");
 			}
-			catch (InterruptedException e) {
-				System.exit(1);
-			}
+			window.setupRace();
+			window.racePaused = true;
+			window.btnPause.setText("Start");
+			window.btnPause.setEnabled(true);
+			window.theComponent.repaint();
 		}
 		//			}
 		//		});
@@ -77,42 +103,20 @@ public class MainRaceWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 700, 700);
+		frame.setResizable(false);
+		frame.setBounds(100, 100, 700, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JPanel headerPanel = new JPanel();
-		headerPanel.setBorder(new LineBorder(Color.GRAY));
+		headerPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
 		frame.getContentPane().add(headerPanel, BorderLayout.NORTH);
 		headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.X_AXIS));
 
-		File UPRMSealFile = new File("image/UPRMSeal-100x100.png");
-		Image UPRMSealImage = null;
-		try {
-			UPRMSealImage = ImageIO.read(UPRMSealFile);
-		}
-		catch (IOException e) {
-			System.out.println("Image File not found");
-			System.exit(1); // Kill APP
-		}
-		ImageIcon UPRMSealIcon = new ImageIcon(UPRMSealImage);
-		
+
 		Component horizontalStrut = Box.createHorizontalStrut(20);
 		headerPanel.add(horizontalStrut);
-		JLabel lblUPRMSeal = new JLabel(UPRMSealIcon);
-		headerPanel.add(lblUPRMSeal);
-
-		Component horizontalGlue_1 = Box.createHorizontalGlue();
-		headerPanel.add(horizontalGlue_1);
-
-		JLabel lblUprmAdvancedProgramming = new JLabel("UPRM Advanced Programming Race");
-		headerPanel.add(lblUprmAdvancedProgramming);
-		lblUprmAdvancedProgramming.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
-		lblUprmAdvancedProgramming.setHorizontalAlignment(SwingConstants.CENTER);
-
-		Component horizontalGlue_2 = Box.createHorizontalGlue();
-		headerPanel.add(horizontalGlue_2);
-
+		
 		File CSELogoFile = new File("image/CSE-logo-100x36.png");
 		Image CSELogoImage = null;
 		try {
@@ -125,7 +129,31 @@ public class MainRaceWindow {
 		ImageIcon CSELogoIcon = new ImageIcon(CSELogoImage);
 		JLabel lblCSELogo = new JLabel(CSELogoIcon);
 		headerPanel.add(lblCSELogo);
-		
+
+		Component horizontalGlue_1 = Box.createHorizontalGlue();
+		headerPanel.add(horizontalGlue_1);
+
+		JLabel lblUprmAdvancedProgramming = new JLabel("UPRM Advanced Programming Race");
+		headerPanel.add(lblUprmAdvancedProgramming);
+		lblUprmAdvancedProgramming.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
+		lblUprmAdvancedProgramming.setHorizontalAlignment(SwingConstants.CENTER);
+
+		Component horizontalGlue_2 = Box.createHorizontalGlue();
+		headerPanel.add(horizontalGlue_2);
+
+		File UPRMSealFile = new File("image/UPRMSeal-100x100.png");
+		Image UPRMSealImage = null;
+		try {
+			UPRMSealImage = ImageIO.read(UPRMSealFile);
+		}
+		catch (IOException e) {
+			System.out.println("Image File not found");
+			System.exit(1); // Kill APP
+		}
+		ImageIcon UPRMSealIcon = new ImageIcon(UPRMSealImage);
+		JLabel lblUPRMSeal = new JLabel(UPRMSealIcon);
+		headerPanel.add(lblUPRMSeal);
+
 		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
 		headerPanel.add(horizontalStrut_1);
 
@@ -144,6 +172,7 @@ public class MainRaceWindow {
 				setupRace();
 				updateTimeElapsed();
 				frame.repaint();
+				resetClicked = true;
 			}
 		});
 		controlPanel.add(btnReset);
@@ -163,6 +192,7 @@ public class MainRaceWindow {
 
 		JButton btnPause = new JButton("Start");
 		controlPanel.add(btnPause);
+		this.btnPause = btnPause;  // Need hook to button to update
 		btnPause.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (racePaused) {
@@ -175,9 +205,8 @@ public class MainRaceWindow {
 				}
 			}
 		});
-
+		
 		setupRace();
-		frame.repaint();
 
 	}
 
@@ -204,6 +233,8 @@ public class MainRaceWindow {
 		}	
 		this.theComponent.addRacers(theCars);
 		this.theComponent.setTimeElapsed(0);
+		this.theComponent.setSomeCarWon(false);
+
 		//this.racePaused = true;
 
 	}
