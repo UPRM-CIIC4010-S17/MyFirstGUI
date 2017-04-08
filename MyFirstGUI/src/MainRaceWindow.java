@@ -21,10 +21,12 @@ import javax.swing.Box;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import javax.swing.border.LineBorder;
 import javax.swing.border.EmptyBorder;
+import java.awt.SystemColor;
 
 public class MainRaceWindow {
 
@@ -38,7 +40,7 @@ public class MainRaceWindow {
 	private JButton btnPause;
 	private boolean resetClicked = false;
 
-
+	private static Random rand = new Random();
 
 	/**
 	 * Launch the application.
@@ -103,6 +105,7 @@ public class MainRaceWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		frame.getContentPane().setBackground(SystemColor.window);
 		frame.setResizable(false);
 		frame.setBounds(100, 100, 700, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -218,13 +221,14 @@ public class MainRaceWindow {
 		Raceable[] theCars = new Raceable[numCars];
 		for(int i=0; i<numCars; i++) {
 			int laneY = i * MyComponent.laneWidth + 10;
-			if (i==0) {
+			int random = rand.nextInt()  % 4;
+			if (random == 0) {
 				theCars[i] = new PoliceCar(0, laneY, Color.RED, 0, 1);
 			}
-			else if (i==1) {
+			else if (random == 1) {
 				theCars[i] = new Truck(0, laneY, Color.BLACK, 0, 1);
 			}
-			else if (i==2) {
+			else if (random == 2) {
 				theCars[i] = new Turtle(0, laneY, Color.BLACK, 0, 1);
 			}
 			else {
